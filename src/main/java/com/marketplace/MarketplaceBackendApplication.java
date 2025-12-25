@@ -1,0 +1,15 @@
+package com.marketplace;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+
+
+@SpringBootApplication
+public class MarketplaceBackendApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MarketplaceBackendApplication.class, args);
+	}
+
+}
