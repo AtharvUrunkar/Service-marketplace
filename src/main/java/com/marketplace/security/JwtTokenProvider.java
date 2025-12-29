@@ -1,37 +1,58 @@
 package com.marketplace.security;
 
-import com.marketplace.entity.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenProvider {
 
 	private final JwtProperties jwtProperties;
+	private final SecretKey secretKey;
 
-	private Key getSigningKey() {
-		return Keys.hmacShaKeyFor(
+	public JwtTokenProvider(JwtProperties jwtProperties) {
+		this.jwtProperties = jwtProperties;
+		this.secretKey = Keys.hmacShaKeyFor(
 				jwtProperties.SECRET.getBytes(StandardCharsets.UTF_8)
 		);
 	}
 
-	public String generateToken(String email, Role role) {
+	public String generateToken(UserDetails userDetails) {
 		return Jwts.builder()
-				.setSubject(email)
-				.claim("role", role.name())
+				.setSubject(userDetails.getUsername())
 				.setIssuedAt(new Date())
 				.setExpiration(
 						new Date(System.currentTimeMillis() + jwtProperties.EXPIRATION_TIME)
 				)
-				.signWith(getSigningKey(), SignatureAlgorithm.HS256)
+				.signWith(secretKey)
 				.compact();
+	}
+
+	public String getUsernameFromToken(String token) {
+		return getClaims(token).getSubject();
+	}
+
+	public boolean validateToken(String token, UserDetails userDetails) {
+		final String username = getUsernameFromToken(token);
+		return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+	}
+
+	private boolean isTokenExpired(String token) {
+		return getClaims(token).getExpiration().before(new Date());
+	}
+
+	private Claims getClaims(String token) {
+		return Jwts.parserBuilder()
+				.setSigningKey(secretKey)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
 	}
 }

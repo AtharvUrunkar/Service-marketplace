@@ -1,6 +1,5 @@
 package com.marketplace.vendor.entity;
 
-import com.marketplace.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,11 +20,6 @@ public class Vendor {
 
 	@Column(nullable = false)
 	private String name;
-
-	// Vendor owns the relationship
-	@OneToOne(optional = false)
-	@JoinColumn(name = "user_id", nullable = false, unique = true)
-	private User user;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
