@@ -4,6 +4,7 @@ import com.marketplace.dto.AuthResponse;
 import com.marketplace.dto.LoginRequest;
 import com.marketplace.entity.User;
 import com.marketplace.repository.UserRepository;
+import com.marketplace.security.CustomUserDetailsService;
 import com.marketplace.security.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsService userDetailsService;
+	private final CustomUserDetailsService customUserDetailsService;
+
 
 	public AuthResponse login(LoginRequest request) {
 
@@ -34,15 +37,14 @@ public class AuthService {
 			throw new RuntimeException("Invalid credentials");
 		}
 
-		// 🔥 LOAD UserDetails (IMPORTANT)
 		UserDetails userDetails =
-				userDetailsService.loadUserByUsername(user.getEmail());
+				customUserDetailsService.loadUserByUsername(user.getEmail());
 
-		// 🔐 Generate token using UserDetails
 		String token = jwtTokenProvider.generateToken(userDetails);
 
 		return new AuthResponse(token);
 	}
+
 	public void register(RegisterRequest request) {
 
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {

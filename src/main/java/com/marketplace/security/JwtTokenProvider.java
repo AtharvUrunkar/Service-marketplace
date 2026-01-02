@@ -1,58 +1,68 @@
 package com.marketplace.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
 	private final JwtProperties jwtProperties;
-	private final SecretKey secretKey;
+
+	private final Key key;
 
 	public JwtTokenProvider(JwtProperties jwtProperties) {
 		this.jwtProperties = jwtProperties;
-		this.secretKey = Keys.hmacShaKeyFor(
-				jwtProperties.SECRET.getBytes(StandardCharsets.UTF_8)
-		);
+		this.key = Keys.hmacShaKeyFor(jwtProperties.SECRET.getBytes());
 	}
 
 	public String generateToken(UserDetails userDetails) {
+
+		List<String> roles = userDetails.getAuthorities()
+				.stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.toList());
+
 		return Jwts.builder()
 				.setSubject(userDetails.getUsername())
+				.claim("roles", roles)
 				.setIssuedAt(new Date())
 				.setExpiration(
 						new Date(System.currentTimeMillis() + jwtProperties.EXPIRATION_TIME)
 				)
-				.signWith(secretKey)
+				.signWith(key, SignatureAlgorithm.HS256)
 				.compact();
 	}
 
 	public String getUsernameFromToken(String token) {
-		return getClaims(token).getSubject();
+		return Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody()
+				.getSubject();
 	}
 
 	public boolean validateToken(String token, UserDetails userDetails) {
-		final String username = getUsernameFromToken(token);
+		String username = getUsernameFromToken(token);
 		return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
 	}
 
 	private boolean isTokenExpired(String token) {
-		return getClaims(token).getExpiration().before(new Date());
-	}
-
-	private Claims getClaims(String token) {
-		return Jwts.parserBuilder()
-				.setSigningKey(secretKey)
+		Date expiration = Jwts.parserBuilder()
+				.setSigningKey(key)
 				.build()
 				.parseClaimsJws(token)
-				.getBody();
+				.getBody()
+				.getExpiration();
+		return expiration.before(new Date());
 	}
 }
