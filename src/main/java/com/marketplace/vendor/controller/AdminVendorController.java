@@ -20,17 +20,15 @@ public class AdminVendorController {
 	private final VendorService vendorService;
 
 	@PostMapping
-	public Vendor createVendor(@RequestBody @Valid VendorCreateRequest request) {
-		return vendorService.createVendor(request);
+	public Vendor createVendor(
+			@AuthenticationPrincipal UserDetails admin,
+			@RequestBody @Valid VendorCreateRequest request
+	) {
+		return vendorService.createVendor(admin.getUsername(), request);
 	}
 
 	@PutMapping("/{id}/approve")
 	public Vendor approveVendor(@PathVariable Long id) {
 		return vendorService.approveVendor(id);
-	}
-
-	@PutMapping("/{id}/block")
-	public Vendor blockVendor(@PathVariable Long id) {
-		return vendorService.blockVendor(id);
 	}
 }

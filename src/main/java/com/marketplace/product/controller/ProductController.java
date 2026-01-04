@@ -1,6 +1,5 @@
 package com.marketplace.product.controller;
 
-import com.marketplace.product.dto.AdminProductCreateRequest;
 import com.marketplace.product.dto.ProductCreateRequest;
 import com.marketplace.product.entity.Product;
 import com.marketplace.product.service.ProductService;
@@ -8,24 +7,23 @@ import com.marketplace.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/admin/products")
+@RequestMapping("/products")
 @RequiredArgsConstructor
-public class AdminProductController {
+public class ProductController {
 
 	private final ProductService productService;
 
 	@PostMapping
 	public Product createProduct(
-			@Valid @RequestBody AdminProductCreateRequest request
+			@AuthenticationPrincipal UserDetails user,
+			@Valid @RequestBody ProductCreateRequest request
 	) {
-		return productService.createProductAsAdmin(request);
-	}
-	@PutMapping("/{id}/approve")
-	public Product approveProduct(@PathVariable Long id) {
-		return productService.approveProduct(id);
+		return productService.createProduct(user.getUsername(), request);
 	}
 
 }

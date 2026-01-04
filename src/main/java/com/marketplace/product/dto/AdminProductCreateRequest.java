@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 @Getter
 @Setter
-public class ProductCreateRequest {
+public class AdminProductCreateRequest {
 
 	@NotBlank
 	private String name;
@@ -21,4 +21,7 @@ public class ProductCreateRequest {
 	@NotNull
 	@Positive
 	private BigDecimal price;
+
+	@NotNull
+	private Long vendorId;
 }
