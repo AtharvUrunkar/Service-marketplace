@@ -1,5 +1,6 @@
 package com.marketplace.product.entity;
 
+import com.marketplace.product.enums.ProductStatus;
 import com.marketplace.vendor.entity.Vendor;
 
 import jakarta.persistence.*;

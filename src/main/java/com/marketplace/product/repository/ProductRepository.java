@@ -1,8 +1,8 @@
 package com.marketplace.product.repository;
 
 import com.marketplace.product.entity.Product;
-import com.marketplace.product.entity.ProductStatus;
 
+import com.marketplace.product.enums.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
