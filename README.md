@@ -61,6 +61,8 @@ CUSTOMER
 ---
 
 ## 🗂️ Project Structure
+
+```text
 src
 └── main
     └── java
@@ -83,7 +85,6 @@ src
                 ├── order
                 ├── security
                 └── entity
-
 ---
 
 ## 🔁 Core API Flows
