@@ -29,16 +29,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		this.userDetailsService = userDetailsService;
 	}
 
-
-
 	@Override
 	protected void doFilterInternal(
-
 			HttpServletRequest request,
 			HttpServletResponse response,
 			FilterChain filterChain
 	) throws ServletException, IOException {
-		System.out.println("JWT FILTER CALLED");
+
+		String path = request.getRequestURI();
+
+		// ✅ SKIP JWT FILTER FOR SWAGGER & PUBLIC ENDPOINTS
+		if (path.startsWith("/swagger")
+				|| path.startsWith("/swagger-ui")
+				|| path.startsWith("/v3/api-docs")
+				|| path.startsWith("/auth")) {
+
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		System.out.println("JWT FILTER CALLED → " + path);
+
 		final String authHeader = request.getHeader("Authorization");
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -49,9 +60,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		final String token = authHeader.substring(7);
 		final String username = jwtTokenProvider.getUsernameFromToken(token);
 
-		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+		if (username != null &&
+				SecurityContextHolder.getContext().getAuthentication() == null) {
 
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			UserDetails userDetails =
+					userDetailsService.loadUserByUsername(username);
 
 			if (jwtTokenProvider.validateToken(token, userDetails)) {
 
@@ -61,14 +74,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 								null,
 								userDetails.getAuthorities()
 						);
-				System.out.println("Authorities in context: " + userDetails.getAuthorities());
 
 				authentication.setDetails(
-						new WebAuthenticationDetailsSource().buildDetails(request)
+						new WebAuthenticationDetailsSource()
+								.buildDetails(request)
 				);
 
-				// 🔥 THIS IS THE MOST IMPORTANT LINE
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+				// 🔥 CRITICAL: Set authentication into security context
+				SecurityContextHolder
+						.getContext()
+						.setAuthentication(authentication);
 			}
 		}
 

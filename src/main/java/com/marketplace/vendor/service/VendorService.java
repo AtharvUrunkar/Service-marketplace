@@ -40,7 +40,7 @@ public class VendorService {
 		Vendor vendor = Vendor.builder()
 				.name(request.businessName())
 				.gstNumber(request.gstNumber())
-				.status(VendorStatus.PENDING_APPROVAL)
+				.status(VendorStatus.PENDING)
 				.user(user)
 				.build();
 
@@ -61,7 +61,7 @@ public class VendorService {
 		Vendor vendor = vendorRepository.findById(vendorId)
 				.orElseThrow(() -> new RuntimeException("Vendor not found"));
 
-		if (vendor.getStatus() != VendorStatus.PENDING_APPROVAL) {
+		if (vendor.getStatus() != VendorStatus.PENDING) {
 			throw new IllegalStateException("Vendor is not pending approval");
 		}
 

@@ -8,7 +8,7 @@ public enum VendorStatus {
 	/**
 	 * Vendor has applied but is not yet reviewed by admin.
 	 */
-	PENDING_APPROVAL,
+	PENDING,
 
 	/**
 	 * Vendor is approved and allowed to create and sell products.
@@ -20,7 +20,7 @@ public enum VendorStatus {
 	 */
 	SUSPENDED,
 
-	PENDING,
+
 	/**
 	 * Vendor is permanently blocked or removed from the platform.
 	 */

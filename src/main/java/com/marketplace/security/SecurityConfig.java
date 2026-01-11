@@ -28,8 +28,18 @@ public class SecurityConfig {
 						.requestMatchers("/auth/**").permitAll()
 						.requestMatchers("/admin/**").hasRole("ADMIN")
 						.requestMatchers("/products/**").permitAll()
-
+						.requestMatchers(
+								"/swagger",
+								"/swagger/**",
+								"/swagger-ui.html",
+								"/swagger-ui/**",
+								"/v3/api-docs/**",
+								"/v3/api-docs.yaml"
+						).permitAll()
 						.anyRequest().authenticated()
+
+
+
 				)
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();

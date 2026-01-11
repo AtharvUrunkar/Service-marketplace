@@ -26,4 +26,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
 	// 🧹 Check if order already paid
 	boolean existsByOrderIdAndStatus(Long orderId, PaymentStatus status);
+
+
+
 }
