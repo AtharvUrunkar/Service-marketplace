@@ -96,6 +96,7 @@ public class CartService {
 			throw new SecurityException("Not your cart");
 		}
 
+
 		item.setQuantity(quantity);
 	}
 

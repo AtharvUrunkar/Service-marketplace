@@ -44,6 +44,9 @@ public class Product {
 	@JoinColumn(name = "vendor_id", nullable = false)
 	private Vendor vendor;
 
+	@Column(nullable = false)
+	private Integer quantity;
+
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 
