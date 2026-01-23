@@ -1,13 +1,40 @@
-import axiosInstance from "../utils/axiosInstance";
+import axios from "axios";
 
-// CUSTOMER applies to become vendor
-export const applyForVendor = async (data) => {
-  const res = await axiosInstance.post("/vendor/apply", data);
-  return res.data;
+const API_BASE = "http://localhost:8080/api";
+
+// Apply to become vendor (USER)
+export const applyForVendor = () => {
+  const token = localStorage.getItem("accessToken");
+
+  return axios.post(
+    `${API_BASE}/vendor/apply`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 };
 
-// Get current vendor status
-export const getMyVendorProfile = async () => {
-  const res = await axiosInstance.get("/vendor/me");
-  return res.data;
+// Get logged-in vendor profile (VENDOR)
+export const getMyVendorProfile = () => {
+  const token = localStorage.getItem("accessToken");
+
+  return axios.get(`${API_BASE}/vendor/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// Get vendor application status (USER)
+export const getVendorStatus = () => {
+  const token = localStorage.getItem("accessToken");
+
+  return axios.get(`${API_BASE}/vendor/status`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 };

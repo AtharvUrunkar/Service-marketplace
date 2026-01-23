@@ -1,28 +1,42 @@
-import { createContext,useContext,useState }  from "react";
-const AuthContext = createContext();
+import { createContext, useContext, useEffect, useState } from "react";
 
-export function AuthProvider({ children }) {
-    const [token,setToken]=useState(localStorage.getItem("token"));
+const AuthContext = createContext(null);
 
-      const login = (jwt) => {
-    localStorage.setItem("token", jwt);
-    setToken(jwt);
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("accessToken");
+    const storedRole = localStorage.getItem("role");
+
+    if (storedToken && storedRole) {
+      setToken(storedToken);
+      setUserRole(storedRole);
+    }
+
+    setLoading(false);
+  }, []);
+
+  const login = (token, role) => {
+    localStorage.setItem("accessToken", token);
+    localStorage.setItem("role", role);
+    setToken(token);
+    setUserRole(role);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     setToken(null);
+    setUserRole(null);
   };
 
-  const isAuthenticated = !!token;
-
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated }}>
-      {children}
+    <AuthContext.Provider value={{ token, userRole, loading, login, logout }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
