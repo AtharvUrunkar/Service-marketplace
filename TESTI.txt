@@ -1,0 +1,27 @@
+I have reached the FULL-STACK TESTING STAGE of my Vendor Management System.
+
+Context:
+- This is a vendor marketplace system (user → vendor after admin approval).
+- Backend is already implemented and running locally.
+- Frontend is implemented and connected to backend.
+- Roles exist: USER, VENDOR, ADMIN.
+- Core flows: user registration, vendor application, admin approval, vendor dashboard, service creation.
+
+What I want from you:
+- Give me EXACT, STEP-BY-STEP instructions to set up LOCAL AUTOMATED TESTING.
+- Cover ALL layers:
+  1. Backend unit tests
+  2. Backend integration tests (API + DB)
+  3. API automation (end-to-end flow)
+  4. Frontend UI automation
+- Use INDUSTRY-STANDARD tools only.
+- Assume I want ONE-COMMAND execution for all tests.
+- Provide:
+  - Folder structure
+  - Tool choices
+  - Example test cases (real ones, not dummy)
+  - Common mistakes to avoid
+- Do NOT explain theory. Treat me like a developer shipping to production.
+- If assumptions are needed, state them clearly and proceed.
+
+Now give me the instructions.

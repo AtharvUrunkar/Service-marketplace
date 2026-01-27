@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/vendor")
+@RequestMapping("/api/vendor")
 @RequiredArgsConstructor
 public class VendorController {
 
@@ -23,5 +23,12 @@ public class VendorController {
 			@Valid @RequestBody VendorApplyRequest request
 	) {
 		return vendorService.applyForVendor(user.getUsername(), request);
+	}
+
+	@GetMapping("/status")
+	public VendorStatusResponse status(
+			@AuthenticationPrincipal UserDetails user
+	) {
+		return vendorService.getVendorStatus(user.getUsername());
 	}
 }

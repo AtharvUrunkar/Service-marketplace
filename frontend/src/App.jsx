@@ -26,7 +26,7 @@ export default function App() {
           <Route
             path="/user/home"
             element={
-              <ProtectedRoute role="USER">
+              <ProtectedRoute role="CUSTOMER">
                 <UserHome />
               </ProtectedRoute>
             }

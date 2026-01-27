@@ -37,13 +37,16 @@ public class AuthService {
 			throw new RuntimeException("Invalid credentials");
 		}
 
-		UserDetails userDetails =
-				customUserDetailsService.loadUserByUsername(user.getEmail());
+		// 🔑 Generate JWT using USER ENTITY, not UserDetails
+		String token = jwtTokenProvider.generateToken(user);
 
-		String token = jwtTokenProvider.generateToken(userDetails);
-
-		return new AuthResponse(token);
+		// 🔑 Return role explicitly
+		return new AuthResponse(
+				token,
+				user.getRole().name()
+		);
 	}
+
 
 	public void register(RegisterRequest request) {
 

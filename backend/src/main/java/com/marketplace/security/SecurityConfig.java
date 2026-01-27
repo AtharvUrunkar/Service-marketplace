@@ -35,19 +35,26 @@ public class SecurityConfig {
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
+
+						// 🔓 Public
 						.requestMatchers("/auth/**").permitAll()
+
+						// 👤 CUSTOMER (User dashboard actions)
+						.requestMatchers("/api/vendor/apply").hasRole("CUSTOMER")
+						.requestMatchers("/api/vendor/status").hasRole("CUSTOMER")
+
+						// 🏪 VENDOR
+						.requestMatchers("/api/vendor/me").hasRole("VENDOR")
+
+						// 👑 ADMIN
 						.requestMatchers("/admin/**").hasRole("ADMIN")
-						.requestMatchers("/products/**").permitAll()
-						.requestMatchers(
-								"/swagger",
-								"/swagger/**",
-								"/swagger-ui.html",
-								"/swagger-ui/**",
-								"/v3/api-docs/**",
-								"/v3/api-docs.yaml"
-						).permitAll()
+
+						// 🔒 Everything else
 						.anyRequest().authenticated()
 				)
+
+
+
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
