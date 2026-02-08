@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class VendorService {
@@ -68,15 +70,29 @@ public class VendorService {
 						vendor.getId(),
 						vendor.getStatus().name()
 				))
-				// No vendor application yet
 				.orElseGet(() -> new VendorStatusResponse(
 						null,
-						VendorStatus.REJECTED.name()
+						VendorStatus.NONE.name()
 				));
 	}
 
 	// =================================================
-	// ADMIN approves vendor application
+	// ADMIN fetches vendors by status
+	// =================================================
+	@Transactional(readOnly = true)
+	public List<VendorStatusResponse> getVendorsByStatus(VendorStatus status) {
+
+		return vendorRepository.findByStatus(status)
+				.stream()
+				.map(vendor -> new VendorStatusResponse(
+						vendor.getId(),
+						vendor.getStatus().name()
+				))
+				.toList();
+	}
+
+	// =================================================
+	// ADMIN approves vendor
 	// =================================================
 	@Transactional
 	public VendorStatusResponse approveVendor(Long vendorId) {
@@ -91,9 +107,31 @@ public class VendorService {
 		// Approve vendor
 		vendor.setStatus(VendorStatus.APPROVED);
 
-		// Promote USER → VENDOR
+		// Promote CUSTOMER → VENDOR
 		User user = vendor.getUser();
 		user.setRole(Role.VENDOR);
+		userRepository.save(user);
+
+		return new VendorStatusResponse(
+				vendor.getId(),
+				vendor.getStatus().name()
+		);
+	}
+
+	// =================================================
+	// ADMIN rejects vendor
+	// =================================================
+	@Transactional
+	public VendorStatusResponse rejectVendor(Long vendorId) {
+
+		Vendor vendor = vendorRepository.findById(vendorId)
+				.orElseThrow(() -> new RuntimeException("Vendor not found"));
+
+		if (vendor.getStatus() != VendorStatus.PENDING) {
+			throw new IllegalStateException("Vendor is not pending approval");
+		}
+
+		vendor.setStatus(VendorStatus.REJECTED);
 
 		return new VendorStatusResponse(
 				vendor.getId(),

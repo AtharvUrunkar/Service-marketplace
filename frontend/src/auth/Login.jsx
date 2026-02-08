@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { loginApi } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
@@ -9,13 +9,11 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login } = useAuth();
+  const { login, token, userRole } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // 🔒 CRITICAL: prevent multiple submissions
     if (loading) return;
 
     setLoading(true);
@@ -23,14 +21,25 @@ export default function Login() {
 
     try {
       const res = await loginApi(email, password);
-      login(res.token, res.role); // role must come from backend
-      navigate("/user/home");
+      login(res.token, res.role); // ONLY store auth
     } catch (err) {
       setError(err.message || "Invalid credentials");
-    } finally {
       setLoading(false);
     }
   };
+
+  // 🔥 ROLE-BASED REDIRECT (CORRECT WAY)
+  useEffect(() => {
+    if (!token || !userRole) return;
+
+    if (userRole === "ADMIN") {
+      navigate("/admin", { replace: true });
+    } else if (userRole === "VENDOR") {
+      navigate("/vendor/dashboard", { replace: true });
+    } else {
+      navigate("/user/home", { replace: true });
+    }
+  }, [token, userRole, navigate]);
 
   return (
     <div style={{ padding: 30, maxWidth: 400 }}>
@@ -41,7 +50,6 @@ export default function Login() {
       <form onSubmit={handleSubmit}>
         <input
           type="email"
-          name="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -52,7 +60,6 @@ export default function Login() {
 
         <input
           type="password"
-          name="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}

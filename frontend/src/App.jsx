@@ -9,6 +9,7 @@ import VendorDashboard from "./vendor/VendorDashboard";
 import AdminDashboard from "./admin/AdminDashboard";
 import PublicHome from "./PublicHome";
 import Unauthorized from "./Unauthorized";
+import PublicRoute from "./components/PublicRoute";
 
 
 export default function App() {
@@ -17,9 +18,33 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           {/* Public */}
-            <Route path="/" element={<PublicHome />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route
+  path="/"
+  element={
+    <PublicRoute>
+      <PublicHome />
+    </PublicRoute>
+  }
+/>
+
+           <Route
+  path="/login"
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>
+
+<Route
+  path="/register"
+  element={
+    <PublicRoute>
+      <Register />
+    </PublicRoute>
+  }
+/>
+
             <Route path="/unauthorized" element={<Unauthorized />}
              />
           {/* User */}

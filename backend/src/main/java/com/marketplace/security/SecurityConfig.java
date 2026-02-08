@@ -40,14 +40,17 @@ public class SecurityConfig {
 						.requestMatchers("/auth/**").permitAll()
 
 						// 👤 CUSTOMER (User dashboard actions)
-						.requestMatchers("/api/vendor/apply").hasRole("CUSTOMER")
-						.requestMatchers("/api/vendor/status").hasRole("CUSTOMER")
+						.requestMatchers("/api/vendor/**").hasAnyRole("CUSTOMER", "VENDOR")
+
 
 						// 🏪 VENDOR
 						.requestMatchers("/api/vendor/me").hasRole("VENDOR")
 
+						//PRODUCT
+						.requestMatchers("/products/**").permitAll()
+
 						// 👑 ADMIN
-						.requestMatchers("/admin/**").hasRole("ADMIN")
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
 
 						// 🔒 Everything else
 						.anyRequest().authenticated()

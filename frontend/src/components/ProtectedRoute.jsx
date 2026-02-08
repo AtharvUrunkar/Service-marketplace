@@ -4,18 +4,18 @@ import { useAuth } from "../context/AuthContext";
 export default function ProtectedRoute({ role, children }) {
   const { token, userRole, loading } = useAuth();
 
-  // 🔑 Wait until auth is hydrated
+  // wait for auth hydration
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  // Not logged in
+  // not logged in
   if (!token) {
     return <Navigate to="/login" replace />;
   }
 
-  // Logged in but wrong role
-  if (role && role !== userRole) {
+  // role check (SAFE)
+  if (role && userRole && role !== userRole) {
     return <Navigate to="/unauthorized" replace />;
   }
 
