@@ -19,7 +19,7 @@ This project focuses on **real-world backend concerns** such as domain modeling,
 CUSTOMER
 → apply for vendor
 → PENDING_APPROVAL
-→ admin approval
+→ admin approval.
 → VENDOR (APPROVED)
 
 
