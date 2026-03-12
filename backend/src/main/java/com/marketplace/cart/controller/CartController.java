@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-
+//testing is done but frontend error while fetching from frontend//
 @RestController
 @RequestMapping("/cart")
 public class CartController {
